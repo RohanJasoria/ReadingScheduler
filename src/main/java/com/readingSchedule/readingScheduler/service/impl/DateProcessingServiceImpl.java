@@ -14,4 +14,25 @@ public class DateProcessingServiceImpl implements DateProcessingService {
         LocalDateTime currentDateTime = LocalDateTime.now();
         return formatter.format(currentDateTime);
     }
+
+    @Override
+    public String getDatePastOneDay() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        return formatter.format(currentDateTime.plusDays(-1));
+    }
+
+    @Override
+    public String getDatePastThreeDays() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        return formatter.format(currentDateTime.plusDays(-3));
+    }
+
+    @Override
+    public String getDatePastSixDays() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        return formatter.format(currentDateTime.plusDays(-6));
+    }
 }

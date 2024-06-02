@@ -2,11 +2,15 @@ package com.readingSchedule.readingScheduler.controller;
 
 import com.readingSchedule.readingScheduler.request.UrlInfoRequest;
 import com.readingSchedule.readingScheduler.response.MessageResponse;
+import com.readingSchedule.readingScheduler.service.FetchUrlService;
 import com.readingSchedule.readingScheduler.service.SyncUrlInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class ReadingSchedulerController {
     @Autowired
     private SyncUrlInfoService syncUrlInfoService;
+    @Autowired
+    private FetchUrlService fetchUrlService;
 
     @PostMapping(value = "/syncUrlInfo")
     public MessageResponse syncUrlInfo(@RequestBody UrlInfoRequest urlInfoRequest) {
@@ -30,5 +36,17 @@ public class ReadingSchedulerController {
             messageResponse.setExceptionMessage(message);
         }
         return messageResponse;
+    }
+
+    @GetMapping(value = "/getReadings")
+    public List<String> getReadings() {
+        List<String> urlList = null;
+        try {
+            log.info("Request Received for fetching today's reading");
+            urlList = fetchUrlService.fetchUrls();
+        } catch (Exception e) {
+            log.error("Error Fetching URLs for today");
+        }
+        return urlList;
     }
 }
