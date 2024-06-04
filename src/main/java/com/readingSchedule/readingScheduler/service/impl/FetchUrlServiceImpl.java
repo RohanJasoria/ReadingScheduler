@@ -2,6 +2,8 @@ package com.readingSchedule.readingScheduler.service.impl;
 
 import com.readingSchedule.readingScheduler.entity.UrlInfo;
 import com.readingSchedule.readingScheduler.repository.UrlInfoRepo;
+import com.readingSchedule.readingScheduler.response.ReadingResponse;
+import com.readingSchedule.readingScheduler.response.ReadsInfo;
 import com.readingSchedule.readingScheduler.service.DateProcessingService;
 import com.readingSchedule.readingScheduler.service.FetchUrlService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +24,9 @@ public class FetchUrlServiceImpl implements FetchUrlService {
     private final UrlInfoRepo urlInfoRepo;
 
     @Override
-    public List<String> fetchUrls() {
-        List<String> urls = new ArrayList<>();
+    public ReadingResponse fetchReadingResponse() {
+        ReadingResponse readingResponse = new ReadingResponse();
+        List<ReadsInfo> readsInfoList = new ArrayList<>();
 
         String datePastOneDay = dateProcessingService.getDatePastOneDay();
         String datePastThreeDays = dateProcessingService.getDatePastThreeDays();
@@ -31,16 +36,24 @@ public class FetchUrlServiceImpl implements FetchUrlService {
         List<UrlInfo> pastThreeDayUrls = urlInfoRepo.findBySyncDate(datePastThreeDays);
         List<UrlInfo> pastSixDayUrls = urlInfoRepo.findBySyncDate(datePastSixDays);
 
-        for(UrlInfo urlInfo : pastOneDayUrls) {
-            urls.add(urlInfo.getUrl());
-        }
-        for(UrlInfo urlInfo : pastThreeDayUrls) {
-            urls.add(urlInfo.getUrl());
-        }
-        for(UrlInfo urlInfo : pastSixDayUrls) {
-            urls.add(urlInfo.getUrl());
-        }
+        populateReadsInfoList(pastOneDayUrls, readsInfoList);
+        populateReadsInfoList(pastThreeDayUrls, readsInfoList);
+        populateReadsInfoList(pastSixDayUrls, readsInfoList);
 
-        return urls;
+        readingResponse.setReadsInfoList(readsInfoList);
+        return readingResponse;
+    }
+
+    private static void populateReadsInfoList(List<UrlInfo> urlInfoList, List<ReadsInfo> readsInfoList) {
+        if(isNull(urlInfoList) || urlInfoList.isEmpty()) {
+            return;
+        }
+        for(UrlInfo urlInfo : urlInfoList) {
+            ReadsInfo readsInfo = new ReadsInfo();
+            readsInfo.setUrl(urlInfo.getUrl());
+            readsInfo.setStartInfo(urlInfo.getStartInfo());
+            readsInfo.setEndInfo(urlInfo.getEndInfo());
+            readsInfoList.add(readsInfo);
+        }
     }
 }

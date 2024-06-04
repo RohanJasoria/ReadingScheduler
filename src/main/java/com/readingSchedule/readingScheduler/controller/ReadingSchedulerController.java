@@ -2,6 +2,7 @@ package com.readingSchedule.readingScheduler.controller;
 
 import com.readingSchedule.readingScheduler.request.UrlInfoRequest;
 import com.readingSchedule.readingScheduler.response.MessageResponse;
+import com.readingSchedule.readingScheduler.response.ReadingResponse;
 import com.readingSchedule.readingScheduler.service.FetchUrlService;
 import com.readingSchedule.readingScheduler.service.SyncUrlInfoService;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +40,14 @@ public class ReadingSchedulerController {
     }
 
     @GetMapping(value = "/getReadings")
-    public List<String> getReadings() {
-        List<String> urlList = null;
+    public ReadingResponse getReadings() {
+        ReadingResponse readingResponse = null;
         try {
             log.info("Request Received for fetching today's reading");
-            urlList = fetchUrlService.fetchUrls();
+            readingResponse = fetchUrlService.fetchReadingResponse();
         } catch (Exception e) {
             log.error("Error Fetching URLs for today");
         }
-        return urlList;
+        return readingResponse;
     }
 }
